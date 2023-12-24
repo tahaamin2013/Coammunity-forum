@@ -36,5 +36,4 @@ const EditorOutput: FC<EditorOutputProps> = ({ content }) => {
     />
   )
 }
-
 export default EditorOutput
