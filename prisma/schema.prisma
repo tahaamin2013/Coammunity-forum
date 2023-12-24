@@ -115,15 +115,16 @@ model Comment {
 }
 
 model Vote {
-  id     String   @id @default(cuid()) @map("_id")
-  user   User     @relation(fields: [userId], references: [id])
-  userId String
-  post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId String
-  type   VoteType
+  id       String   @id @default(cuid()) @map("_id")
+  user     User     @relation(fields: [userId], references: [id])
+  userId   String
+  post     Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId   String
+  type     VoteType
 
-  @@unique([userId, postId, type])
+  @@unique([userId, postId])
 }
+
 
 model CommentVote {
   id        String   @id @default(cuid()) @map("_id")
