@@ -133,5 +133,5 @@ model CommentVote {
   commentId String
   type      VoteType
 
-  @@unique([userId, commentId, type])
+  @@unique([userId, commentId])
 }
