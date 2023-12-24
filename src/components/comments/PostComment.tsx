@@ -38,7 +38,7 @@ const PostComment: FC<PostCommentProps> = ({
   const { data: session } = useSession()
   const [isReplying, setIsReplying] = useState<boolean>(false)
   const commentRef = useRef<HTMLDivElement>(null)
-  const [input, setInput] = useState<string>(`@${comment.author.username} `)
+  const [input, setInput] = useState<string>(``)
   const router = useRouter()
   useOnClickOutside(commentRef, () => {
     setIsReplying(false)
@@ -79,7 +79,7 @@ const PostComment: FC<PostCommentProps> = ({
           className='h-6 w-6'
         />
         <div className='ml-2 flex items-center gap-x-2'>
-          <p className='text-sm font-medium text-gray-900'>u/{comment.author.username}</p>
+          <p className='text-sm font-medium text-gray-900'>u/ {comment.author.name}</p>
 
           <p className='max-h-40 truncate text-xs text-zinc-500'>
             {formatTimeToNow(new Date(comment.createdAt))}

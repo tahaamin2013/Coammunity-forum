@@ -28,7 +28,7 @@ export async function PATCH(req: Request) {
       if (existingVote.type === voteType) {
         await db.commentVote.delete({
           where: {
-            userId_commentId: {
+            userId_commentId: { 
               commentId,
               userId: session.user.id,
             },
