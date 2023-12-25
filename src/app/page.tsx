@@ -35,6 +35,7 @@ export default async function Home() {
             </div>
 
             <Link
+            aria-label='createcommunity'
               className={buttonVariants({
                 className: 'w-full mt-4 mb-6',
               })}

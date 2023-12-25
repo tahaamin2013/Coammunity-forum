@@ -1,10 +1,14 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "cockroachdb"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 enum VoteType {
@@ -13,34 +17,37 @@ enum VoteType {
 }
 
 model Account {
-  id                String  @id @default(cuid()) @map("_id")
+  id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String? @db.Text
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-  id           String   @id @default(cuid()) @map("_id")
+  id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model User {
-  id                String         @id @default(cuid()) @map("_id")
+  id                String         @id @default(cuid())
   name              String?
   email             String?        @unique
   emailVerified     DateTime?
@@ -59,8 +66,8 @@ model User {
 }
 
 model Subreddit {
-  id        String   @id @default(cuid()) @map("_id")
-  name      String
+  id        String   @id @default(cuid())
+  name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   posts     Post[]
@@ -68,23 +75,24 @@ model Subreddit {
   creatorId   String?
   Creator     User?          @relation("CreatedBy", fields: [creatorId], references: [id])
   subscribers Subscription[]
-  // @@index([name])
 
   @@index([name])
+  @@index([creatorId])
 }
 
 model Subscription {
-  id          String    @id @default(cuid()) @map("_id")
   user        User      @relation(fields: [userId], references: [id])
   userId      String
   subreddit   Subreddit @relation(fields: [subredditId], references: [id])
   subredditId String
 
-  @@unique([userId, subredditId])
+  @@id([userId, subredditId])
+  @@index([userId])
+  @@index([subredditId])
 }
 
 model Post {
-  id          String    @id @default(cuid()) @map("_id")
+  id          String    @id @default(cuid())
   title       String
   content     Json?
   createdAt   DateTime  @default(now())
@@ -93,12 +101,15 @@ model Post {
   authorId    String
   subreddit   Subreddit @relation(fields: [subredditId], references: [id])
   subredditId String
-  comments    Comment[]
+  comments    Comment[] 
   votes       Vote[]
+
+  @@index([authorId])
+  @@index([subredditId])
 }
 
 model Comment {
-  id        String   @id @default(cuid()) @map("_id")
+  id        String   @id @default(cuid())
   text      String
   createdAt DateTime @default(now())
   author    User     @relation(fields: [authorId], references: [id])
@@ -107,32 +118,37 @@ model Comment {
   postId    String
 
   replyToId String?
-  replyTo   Comment?  @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+replyTo   Comment?  @relation("ReplyTo", fields: [replyToId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   replies   Comment[] @relation("ReplyTo")
 
   votes     CommentVote[]
   commentId String?
+
+  @@index([replyToId])
+  @@index([authorId])
+  @@index([postId])
 }
 
 model Vote {
-  id       String   @id @default(cuid()) @map("_id")
-  user     User     @relation(fields: [userId], references: [id])
-  userId   String
-  post     Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId   String
-  type     VoteType
+  user   User     @relation(fields: [userId], references: [id])
+  userId String
+  post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String
+  type   VoteType
 
-  @@unique([userId, postId])
+  @@id([userId, postId])
+  @@index([postId])
+  @@index([userId])
 }
 
-
 model CommentVote {
-  id        String   @id @default(cuid()) @map("_id")
   user      User     @relation(fields: [userId], references: [id])
   userId    String
   comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId String
   type      VoteType
 
-  @@unique([userId, commentId])
+  @@id([userId, commentId])
+  @@index([commentId])
+  @@index([userId])
 }
