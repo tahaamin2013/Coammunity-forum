@@ -5,6 +5,7 @@ import { Icons } from './Icons'
 import { buttonVariants } from './ui/Button'
 import { UserAccountNav } from './UserAccountNav'
 import SearchBar from './SearchBar'
+import Image from 'next/image'
 
 const Navbar = async () => {
   const session = await getServerSession(authOptions)
@@ -13,8 +14,9 @@ const Navbar = async () => {
       <div className='container max-w-7xl h-full mx-auto flex items-center justify-between gap-2'>
         {/* logo */}
         <Link href='/' className='flex gap-2 items-center'>
-          <Icons.logo className='h-8 w-8 sm:h-6 sm:w-6' />
-          <p className='hidden text-zinc-700 text-sm font-medium md:block'>Render Forum</p>
+        <Icons.logo className='w-[160px] h-[40px]  hidden sm:block'/>
+        <Image src="/Logo.png" alt='Logo' width={50} height={50} className='block sm:hidden' />
+
         </Link>
 
         {/* search bar */}
