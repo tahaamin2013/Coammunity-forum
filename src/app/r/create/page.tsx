@@ -77,9 +77,13 @@ const Page = () => {
               r/
             </p>
             <Input
+              id="Community name"
+              type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               className='pl-6'
+              placeholder='Community'
+              aria-labelledby="CommunityInput"
             />
           </div>
         </div>
